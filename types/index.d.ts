@@ -47,14 +47,16 @@ interface Transaction {
 interface RegUtilOpts {
     APIPASS?: string;
     APIURL?: string;
+    network?: Network;
 }
 export declare class RegtestUtils {
     network: Network;
     private _APIURL;
     private _APIPASS;
     constructor(_opts?: RegUtilOpts);
-    readonly RANDOM_ADDRESS: string;
+    get RANDOM_ADDRESS(): string;
     dhttp(options: Request): Promise<DhttpResponse>;
+    chain(): Promise<string>;
     broadcast(txHex: string): Promise<null>;
     mine(count: number): Promise<string[]>;
     height(): Promise<number>;

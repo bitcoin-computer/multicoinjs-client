@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
+exports.RegtestUtils = void 0;
 const assert = require('assert');
 const rng = require('randombytes');
 const bs58check = require('bs58check');
@@ -8,10 +9,10 @@ let RANDOM_ADDRESS;
 class RegtestUtils {
   constructor(_opts) {
     this._APIURL =
-      (_opts || {}).APIURL || process.env.APIURL || 'http://127.0.0.1:8080/1';
+      (_opts || {}).APIURL || process.env.APIURL || 'http://127.0.0.1:5001/1';
     this._APIPASS = (_opts || {}).APIPASS || process.env.APIPASS || 'satoshi';
     // regtest network parameters
-    this.network = {
+    this.network = (_opts || {}).network || {
       messagePrefix: '\x18Bitcoin Signed Message:\n',
       bech32: 'bcrt',
       bip32: {
@@ -36,6 +37,12 @@ class RegtestUtils {
         if (err) return reject(err);
         else return resolve(data);
       });
+    });
+  }
+  async chain() {
+    return this.dhttp({
+      method: 'GET',
+      url: this._APIURL + '/chain',
     });
   }
   async broadcast(txHex) {

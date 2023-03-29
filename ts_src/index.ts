@@ -58,6 +58,7 @@ interface Transaction {
 interface RegUtilOpts {
   APIPASS?: string;
   APIURL?: string;
+  network?: Network;
 }
 
 const dhttpCallback = require('dhttp/200');
@@ -71,10 +72,10 @@ export class RegtestUtils {
 
   constructor(_opts?: RegUtilOpts) {
     this._APIURL =
-      (_opts || {}).APIURL || process.env.APIURL || 'http://127.0.0.1:8080/1';
+      (_opts || {}).APIURL || process.env.APIURL || 'http://127.0.0.1:5001/1';
     this._APIPASS = (_opts || {}).APIPASS || process.env.APIPASS || 'satoshi';
     // regtest network parameters
-    this.network = {
+    this.network = (_opts || {}).network || {
       messagePrefix: '\x18Bitcoin Signed Message:\n',
       bech32: 'bcrt',
       bip32: {
@@ -102,6 +103,13 @@ export class RegtestUtils {
         else return resolve(data);
       });
     });
+  }
+
+  async chain(): Promise<string> {
+    return this.dhttp({
+      method: 'GET',
+      url: this._APIURL + '/chain',
+    }) as Promise<string>;
   }
 
   async broadcast(txHex: string): Promise<null> {

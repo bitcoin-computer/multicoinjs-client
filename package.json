@@ -1,7 +1,7 @@
 {
-  "name": "regtest-client",
+  "name": "@bitcoin-computer/multicoinjs-client",
   "version": "0.2.0",
-  "description": "A client for regtest bitcoin usage. Requires regtest-server from bitcoinjs github.",
+  "description": "A client for regtest bitcoin or litecoin usage. Requires multicoinjs-server from multicoinjs github.",
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "files": [
@@ -27,10 +27,12 @@
   },
   "keywords": [
     "bitcoin",
+    "litecoin",
     "regtest",
     "client"
   ],
   "author": "Jonathan Underwood",
+  "contributors": ["Bitcoin Computer Devs"],
   "license": "MIT",
   "dependencies": {
     "bs58check": "^2.1.2",
