@@ -7,6 +7,13 @@ const { network } = regtestUtils
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 describe('regtest utils', () => {
+  it('should receive response 200 from /', async () => {
+    const response = await regtestUtils.dhttp({
+      method: 'GET',
+      url: `${regtestUtils._APIURL}/`,
+    })
+    assert.strictEqual(response, 'regtest')
+  })
   it('should get the current height', async () => {
     assert.strictEqual(typeof (await regtestUtils.height()), 'number')
   })
