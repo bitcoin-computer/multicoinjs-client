@@ -105,6 +105,13 @@ export class RegtestUtils {
     });
   }
 
+  async chain(): Promise<string> {
+    return this.dhttp({
+      method: 'GET',
+      url: this._APIURL + '/chain',
+    }) as Promise<string>;
+  }
+
   async broadcast(txHex: string): Promise<null> {
     return this.dhttp({
       method: 'POST',
