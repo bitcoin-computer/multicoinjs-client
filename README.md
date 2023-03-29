@@ -1,10 +1,12 @@
-# Bitcoin Regtest Client
+# Bitcoin Multicoin Client
+A library for managing integration test on multicoinjs regtest server
 
-A library for managing regtest server. (Good for integration tests)
+This repo is a clone from the original [regtest-client](https://github.com/bitcoinjs/regtest-client.git) repository, with the addition of support other UTXOs based blockchains.
+Currently supports Bitcoin and Litecoin.
 
 ## You must specify a server
 
-Default URL is `http://127.0.0.1:8080/1`, and the recommended way to set up a server
+Default URL is `http://127.0.0.1:5001/1`, and the recommended way to set up a server
 is to run a docker container locally.
 
 You can override the URL with `APIURL` environment variable or by using the
@@ -15,13 +17,20 @@ env variable, or `new RegtestUtils(bitcoin, { APIURL: 'xxx', APIPASS: 'yyy' })`
 
 The optional second arg can have either, both, or none of the two overrides.
 
+You can provide a network configuration 
+
+````
+export const regtestUtils = new RegtestUtils({
+  APIPASS,
+  APIURL,
+  network: litecoin.networks.regtest,
+});
+````
+
 ## Docker
 
-Check the docker folder on [regtest-server](https://github.com/bitcoinjs/regtest-server)
+Check the docker folder on [@bitocin-computer/mutlicoinjs-server](https://github.com/bitcoin-computer/multicoinjs-server)
 to run a server locally.
-
-Also, see bitcoinjs-lib travis config to see how to use the docker image with CI.    
-[Check the .travis.yml here.](https://github.com/bitcoinjs/bitcoinjs-lib/blob/b3def6b4006683190657ef40efa7a8bcbb78b5cd/.travis.yml#L3-L10)
 
 ## TypeScript support
 
@@ -33,10 +42,10 @@ Pull requests must all contain TS, JS, and types where needed.
 ```js
 // inside an async function to use await
 
-// bitcoinjs-lib must be the >=5.0.6 to use.
-// For bitcoinjs-lib >=4.0.3, use version v0.0.8 of regtest-client
-const bitcoin = require('bitcoinjs-lib')
-const { RegtestUtils } = require('regtest-client')
+// @bitcoin-computer/bitcoinjs-lib must be the >=5.0.6 to use.
+// For @bitcoin-computer/bitcoinjs-lib >=4.0.3, use version v0.0.8 of @bitcoin-computer/multicoinjs-client
+const bitcoin = require('@bitcoin-computer/multicoinjs-lib')
+const { RegtestUtils } = require('@bitcoin-computer/multicoinjs-client')
 const regtestUtils = new RegtestUtils(bitcoin)
 
 const network = regtestUtils.network // regtest network params
