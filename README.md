@@ -42,15 +42,17 @@ Pull requests must all contain TS, JS, and types where needed.
 ```js
 // inside an async function to use await
 
-// @bitcoin-computer/bitcoinjs-lib must be the >=5.0.6 to use.
-// For @bitcoin-computer/bitcoinjs-lib >=4.0.3, use version v0.0.8 of @bitcoin-computer/multicoinjs-client
 const bitcoin = require('@bitcoin-computer/multicoinjs-lib')
+const { ECPairFactory } = require('ecpair');
+const tinysecp = require('tiny-secp256k1');
 const { RegtestUtils } = require('@bitcoin-computer/multicoinjs-client')
 const regtestUtils = new RegtestUtils(bitcoin)
 
+const ECPair = ECPairFactory(tinysecp);
+
 const network = regtestUtils.network // regtest network params
 
-const keyPair = bitcoin.ECPair.makeRandom({ network })
+const keyPair = ECPair.makeRandom({ network })
 const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network })
 
 // Tell the server to send you coins (satoshis)
@@ -67,31 +69,36 @@ const unspents = await regtestUtils.unspents(p2pkh.address)
 
 // Get data of a certain transaction
 const fetchedTx = await regtestUtils.fetch(unspent.txId)
+const fetchedTxComplex = await regtestUtils.fetch(unspentComplex.txId);
 
 // Mine 6 blocks, returns an Array of the block hashes
 // All of the above faucet payments will confirm
 const results = await regtestUtils.mine(6)
 
 // Send our own transaction
-const txb = new bitcoin.TransactionBuilder(network)
-txb.addInput(unspent.txId, unspent.vout)
-txb.addInput(unspentComplex.txId, unspentComplex.vout)
+const txb = new bitcoin.Psbt({ network });
+txb.addInput({
+  hash: unspent.txId,
+  index: unspent.vout,
+  nonWitnessUtxo: Buffer.from(fetchedTx.txHex, 'hex'),
+});
+txb.addInput({
+  hash: unspentComplex.txId,
+  index: unspentComplex.vout,
+  nonWitnessUtxo: Buffer.from(fetchedTxComplex.txHex, 'hex'),
+});
+
 // regtestUtils.RANDOM_ADDRESS is created on first load.
 // regtestUtils.randomAddress() will return a new random address every time.
 // (You won't have the private key though.)
-txb.addOutput(regtestUtils.RANDOM_ADDRESS, 1e4)
+txb.addOutput({ address: regtestUtils.RANDOM_ADDRESS, value: 1e4 });
 
-txb.sign({
-  prevOutScriptType: 'p2pkh',
-  vin: 0,
-  keyPair,
-})
-txb.sign({
-  prevOutScriptType: 'p2pkh',
-  vin: 1,
-  keyPair,
-})
-const tx = txb.build()
+txb.signInput(0, keyPair);
+txb.signInput(1, keyPair);
+
+txb.finalizeAllInputs();
+
+const tx = txb.extractTransaction();
 
 // build and broadcast to the Bitcoin Local RegTest server
 await regtestUtils.broadcast(tx.toHex())
