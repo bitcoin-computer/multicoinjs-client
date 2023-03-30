@@ -35,54 +35,65 @@ describe('regtest utils', () => {
   })
 
   it('should get faucet, broadcast, verify', async () => {
-    const keyPair = ECPair.makeRandom({ network })
-    const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network })
+    const keyPair = ECPair.makeRandom({ network });
+    const p2pkh = bitcoin.payments.p2pkh({
+      pubkey: keyPair.publicKey,
+      network,
+    });
 
-    const unspent = await regtestUtils.faucet(p2pkh.address, 2e4)
+    const unspent = await regtestUtils.faucet(p2pkh.address, 2e4);
 
-    const unspentComplex = await regtestUtils.faucetComplex(p2pkh.output, 1e4)
+    const unspentComplex = await regtestUtils.faucetComplex(p2pkh.output, 1e4);
 
     await sleep(100);
 
-    const unspents = await regtestUtils.unspents(p2pkh.address)
+    const unspents = await regtestUtils.unspents(p2pkh.address);
 
-    const fetchedTx = await regtestUtils.fetch(unspent.txId)
-    const fetchedTxComplex = await regtestUtils.fetch(unspentComplex.txId)
+    const fetchedTx = await regtestUtils.fetch(unspent.txId);
+    const fetchedTxComplex = await regtestUtils.fetch(unspentComplex.txId);
 
-    assert.strictEqual(fetchedTx.txId, unspent.txId)
+    assert.strictEqual(fetchedTx.txId, unspent.txId);
 
     assert.deepStrictEqual(
       unspent,
       unspents.filter(v => v.value === unspent.value)[0],
-      'unspents must be equal'
-    )
+      'unspents must be equal',
+    );
 
     assert.deepStrictEqual(
       unspentComplex,
       unspents.filter(v => v.value === unspentComplex.value)[0],
-      'unspents must be equal'
-    )
+      'unspents must be equal',
+    );
 
-    const txb = new bitcoin.Psbt({network})
-    txb.addInput({hash: unspent.txId, index: unspent.vout, sequence: 0, nonWitnessUtxo: Buffer.from(fetchedTx.txHex, 'hex')})
-    txb.addInput({hash: unspentComplex.txId, index: unspentComplex.vout, sequence: 0, nonWitnessUtxo: Buffer.from(fetchedTxComplex.txHex, 'hex')})
-    txb.addOutput({address:regtestUtils.RANDOM_ADDRESS, value: 1e4})
+    const txb = new bitcoin.Psbt({ network });
+    txb.addInput({
+      hash: unspent.txId,
+      index: unspent.vout,
+      nonWitnessUtxo: Buffer.from(fetchedTx.txHex, 'hex'),
+    });
+    txb.addInput({
+      hash: unspentComplex.txId,
+      index: unspentComplex.vout,
+      nonWitnessUtxo: Buffer.from(fetchedTxComplex.txHex, 'hex'),
+    });
+    txb.addOutput({ address: regtestUtils.RANDOM_ADDRESS, value: 1e4 });
 
     txb.signInput(0, keyPair);
     txb.signInput(1, keyPair);
 
     txb.finalizeAllInputs();
 
-    const tx = txb.extractTransaction()
+    const tx = txb.extractTransaction();
 
     // build and broadcast to the Bitcoin RegTest network
-    await regtestUtils.broadcast(tx.toHex())
+    await regtestUtils.broadcast(tx.toHex());
 
     await regtestUtils.verify({
       txId: tx.getId(),
       address: regtestUtils.RANDOM_ADDRESS,
       vout: 0,
-      value: 1e4
-    })
-  })
+      value: 1e4,
+    });
+  });
 })
