@@ -1,9 +1,14 @@
 const { describe, it } = require('mocha')
 const assert = require('assert')
-const bitcoin = require('bitcoinjs-lib')
+const bitcoin = require('@bitcoin-computer/multicoinjs-lib')
 const { RegtestUtils } = require('..')
 const regtestUtils = new RegtestUtils()
 const { network } = regtestUtils
+const { ECPairFactory } = require('ecpair');
+const tinysecp = require('tiny-secp256k1');
+
+const ECPair = ECPairFactory(tinysecp);
+
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 describe('regtest utils', () => {
@@ -30,7 +35,7 @@ describe('regtest utils', () => {
   })
 
   it('should get faucet, broadcast, verify', async () => {
-    const keyPair = bitcoin.ECPair.makeRandom({ network })
+    const keyPair = ECPair.makeRandom({ network })
     const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network })
 
     const unspent = await regtestUtils.faucet(p2pkh.address, 2e4)
@@ -42,6 +47,7 @@ describe('regtest utils', () => {
     const unspents = await regtestUtils.unspents(p2pkh.address)
 
     const fetchedTx = await regtestUtils.fetch(unspent.txId)
+    const fetchedTxComplex = await regtestUtils.fetch(unspentComplex.txId)
 
     assert.strictEqual(fetchedTx.txId, unspent.txId)
 
@@ -57,22 +63,17 @@ describe('regtest utils', () => {
       'unspents must be equal'
     )
 
-    const txb = new bitcoin.TransactionBuilder(network)
-    txb.addInput(unspent.txId, unspent.vout)
-    txb.addInput(unspentComplex.txId, unspentComplex.vout)
-    txb.addOutput(regtestUtils.RANDOM_ADDRESS, 1e4)
+    const txb = new bitcoin.Psbt({network})
+    txb.addInput({hash: unspent.txId, index: unspent.vout, sequence: 0, nonWitnessUtxo: Buffer.from(fetchedTx.txHex, 'hex')})
+    txb.addInput({hash: unspentComplex.txId, index: unspentComplex.vout, sequence: 0, nonWitnessUtxo: Buffer.from(fetchedTxComplex.txHex, 'hex')})
+    txb.addOutput({address:regtestUtils.RANDOM_ADDRESS, value: 1e4})
 
-    txb.sign({
-      prevOutScriptType: 'p2pkh',
-      vin: 0,
-      keyPair,
-    })
-    txb.sign({
-      prevOutScriptType: 'p2pkh',
-      vin: 1,
-      keyPair,
-    })
-    const tx = txb.build()
+    txb.signInput(0, keyPair);
+    txb.signInput(1, keyPair);
+
+    txb.finalizeAllInputs();
+
+    const tx = txb.extractTransaction()
 
     // build and broadcast to the Bitcoin RegTest network
     await regtestUtils.broadcast(tx.toHex())
