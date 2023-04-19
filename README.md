@@ -1,5 +1,5 @@
-# Bitcoin Multicoin Client
-A library for managing integration test on multicoinjs regtest server
+# NakamotoJS Client
+A library for managing integration test on NakamotoJS server
 
 This repo is a clone from the original [regtest-client](https://github.com/bitcoinjs/regtest-client.git) repository, with the addition of support other UTXOs based blockchains.
 Currently supports Bitcoin and Litecoin.
@@ -29,7 +29,7 @@ export const regtestUtils = new RegtestUtils({
 
 ## Docker
 
-Check the docker folder on [@bitocin-computer/mutlicoinjs-server](https://github.com/bitcoin-computer/multicoinjs-server)
+Check the docker folder on [@bitocin-computer/nakamotojs-server](https://github.com/bitcoin-computer/nakamotojs-server)
 to run a server locally.
 
 ## TypeScript support
@@ -42,10 +42,10 @@ Pull requests must all contain TS, JS, and types where needed.
 ```js
 // inside an async function to use await
 
-const bitcoin = require('@bitcoin-computer/multicoinjs-lib')
+const bitcoin = require('@bitcoin-computer/nakamotojs-lib')
 const { ECPairFactory } = require('ecpair');
 const tinysecp = require('tiny-secp256k1');
-const { RegtestUtils } = require('@bitcoin-computer/multicoinjs-client')
+const { RegtestUtils } = require('@bitcoin-computer/nakamotojs-client')
 const regtestUtils = new RegtestUtils(bitcoin)
 
 const ECPair = ECPairFactory(tinysecp);

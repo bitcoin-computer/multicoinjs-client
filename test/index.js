@@ -1,6 +1,6 @@
 const { describe, it } = require('mocha')
 const assert = require('assert')
-const bitcoin = require('@bitcoin-computer/multicoinjs-lib')
+const bitcoin = require('@bitcoin-computer/nakamotojs-lib')
 const { RegtestUtils } = require('..')
 const regtestUtils = new RegtestUtils()
 const { network } = regtestUtils
