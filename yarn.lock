@@ -23,10 +23,10 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@bitcoin-computer/multicoinjs-lib@6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@bitcoin-computer/multicoinjs-lib/-/multicoinjs-lib-6.1.0.tgz#b022bfd79ec74dfa9f7bf7cf012e0232cfedb091"
-  integrity sha512-2nT224Qa1frchlXujQW2p81KFhAvmUcBwDvwPFM4L5Q3xicUev5RRnBC5DqiIWrJtq8hYmIadg4VCa2QmjckxQ==
+"@bitcoin-computer/nakamotojs-lib@^6.1.1":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@bitcoin-computer/nakamotojs-lib/-/nakamotojs-lib-6.1.4.tgz#1b22a439152edbea6c1a82a33248b3f31510ee38"
+  integrity sha512-HLqMdMK/jMvFF4f3/0ynq1ao7/t6/H3+0Hp/+wKRgIuzuBFz97lj6VZIzoM0fd63W/hwYzelgzIcRKl3ZytW7g==
   dependencies:
     "@noble/hashes" "^1.2.0"
     bech32 "^2.0.0"

@@ -72,7 +72,7 @@ export class RegtestUtils {
 
   constructor(_opts?: RegUtilOpts) {
     this._APIURL =
-      (_opts || {}).APIURL || process.env.APIURL || 'http://127.0.0.1:5001/1';
+      (_opts || {}).APIURL || process.env.APIURL || 'http://127.0.0.1:3000/1';
     this._APIPASS = (_opts || {}).APIPASS || process.env.APIPASS || 'satoshi';
     // regtest network parameters
     this.network = (_opts || {}).network || {
