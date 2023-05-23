@@ -1,6 +1,6 @@
 {
   "name": "@bitcoin-computer/nakamotojs-client",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A client for regtest bitcoin or litecoin usage. Requires nakamotojs-server from github.",
   "main": "src/index.js",
   "types": "types/index.d.ts",
